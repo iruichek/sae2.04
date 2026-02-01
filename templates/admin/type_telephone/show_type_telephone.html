@@ -1,0 +1,48 @@
+{% extends "admin/layout_admin.html" %}
+{% block body %}
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h3 class="text-primary m-0 font-weight-bold">Gestion des types de téléphones</h3>
+        </div>
+        <div class="card-body">
+            <a href="/admin/type-telephone/add" class="btn btn-success mb-3">
+                <i class="fas fa-plus"></i> Ajouter un type
+            </a>
+
+            {% if types_telephone %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Libellé</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for type in types_telephone %}
+                    <tr>
+                        <td>{{ type.id_type_telephone }}</td>
+                        <td>{{ type.libelle_type_telephone }}</td>
+                        <td>
+                            <a href="/admin/type-telephone/edit?id={{ type.id_type_telephone }}"
+                               class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/admin/type-telephone/delete?id={{ type.id_type_telephone }}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Supprimer ce type ?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-info">Aucun type de téléphone.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

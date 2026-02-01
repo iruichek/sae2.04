@@ -19,7 +19,7 @@ def get_db():
 def activate_db_options(db):
     cursor = db.cursor()
 
-    # ----- ONLY_FULL_GROUP_BY -----
+
     cursor.execute("SHOW VARIABLES LIKE 'sql_mode'")
     result = cursor.fetchone()
     if result:
@@ -32,9 +32,7 @@ def activate_db_options(db):
         else:
             print('MYSQL : mode ONLY_FULL_GROUP_BY ok')
 
-    # ----- lower_case_table_names -----
-    # ⚠️ SUR WINDOWS : variable READ ONLY
-    # On vérifie seulement, on ne modifie PAS
+
     cursor.execute("SHOW VARIABLES LIKE 'lower_case_table_names'")
     result = cursor.fetchone()
     if result:

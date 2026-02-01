@@ -14,7 +14,7 @@ def client_liste_envies_add():
     mycursor = get_db().cursor()
     id_client = session['id_user']
     id_article = request.args.get('id_article')
-    return redirect('/client/article/show')
+    return redirect('/client/telephone/show')
 
 @client_liste_envies.route('/client/envie/delete', methods=['get'])
 def client_liste_envies_delete():
@@ -27,11 +27,11 @@ def client_liste_envies_delete():
 def client_liste_envies_show():
     mycursor = get_db().cursor()
     id_client = session['id_user']
-    articles_liste_envies = []
-    articles_historique = []
+    telephones_liste_envies = []
+    telephones_historique = []
     return render_template('client/liste_envies/liste_envies_show.html'
-                           ,articles_liste_envies=articles_liste_envies
-                           , articles_historique=articles_historique
+                           ,telephones_liste_envies=telephones_liste_envies
+                           , telephones_historique=telephones_historique
                            #, nb_liste_envies= nb_liste_envies
                            )
 
@@ -40,7 +40,7 @@ def client_liste_envies_show():
 def client_historique_add(article_id, client_id):
     mycursor = get_db().cursor()
     client_id = session['id_user']
-    # rechercher si l'article pour cet utilisateur est dans l'historique
+    # rechercher si l'telephone pour cet utilisateur est dans l'historique
     # si oui mettre
     sql ='''   '''
     mycursor.execute(sql, (article_id, client_id))

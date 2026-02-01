@@ -1,0 +1,66 @@
+{% extends "admin/layout_admin.html" %}
+{% block body %}
+<div class="container-fluid">
+    <div class="card shadow">
+        <div class="card-header py-3">
+            <h3 class="text-primary m-0 font-weight-bold">Gestion des téléphones</h3>
+        </div>
+        <div class="card-body">
+            <a href="/admin/telephone/add" class="btn btn-success mb-3">
+                <i class="fas fa-plus"></i> Ajouter un téléphone
+            </a>
+
+            {% if telephone %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Nom</th>
+                        <th>Type</th>
+                        <th>Couleur</th>
+                        <th>Prix</th>
+                        <th>Stock</th>
+                        <th>Marque</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tel in telephone %}
+                    <tr>
+                        <td>
+                            {% if tel.image %}
+                                <img src="{{ url_for('static', filename='images/' + tel.image) }}"
+                                     style="width:50px;height:50px; object-fit:cover;">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/no_photo.jpeg') }}"
+                                     style="width:50px;height:50px;">
+                            {% endif %}
+                        </td>
+                        <td>{{ tel.nom_telephone }}</td>
+                        <td>{{ tel.libelle_type_telephone }}</td>
+                        <td>{{ tel.libelle_couleur }}</td>
+                        <td>{{ tel.prix_telephone }} €</td>
+                        <td>{{ tel.stock }}</td>
+                        <td>{{ tel.marque }}</td>
+                        <td>
+                            <a href="/admin/telephone/edit?id_telephone={{ tel.id_telephone }}"
+                               class="btn btn-sm btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="/admin/telephone/delete?id_telephone={{ tel.id_telephone }}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Supprimer ce téléphone ?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-info">Aucun téléphone dans la base de données.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

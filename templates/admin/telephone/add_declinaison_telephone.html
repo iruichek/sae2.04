@@ -5,14 +5,14 @@
 {% endblock %}
 
 {% block body %}
-    <h2>ajouter une déclinaison d'un article</h2>
+    <h2>ajouter une déclinaison d'un telephone</h2>
     <div class="row mt-5">
-    {% if article.image is defined and article.image is not none %}
-        <img class="card-img-top rounded mx-4 d-block"  style="width:200px; height:200px; border: 1px solid black; padding: 25px;" id="output" src="{{ url_for('static', filename = 'images/')}}{{ article.image }}" alt="">
+    {% if telephone.image is defined and telephone.image is not none %}
+        <img class="card-img-top rounded mx-4 d-block"  style="width:200px; height:200px; border: 1px solid black; padding: 25px;" id="output" src="{{ url_for('static', filename = 'images/')}}{{ telephone.image }}" alt="">
     {% endif %}
         <div class="w-25">
-            <form class="w-190" method="post" action="/admin/declinaison_article/add">
-                <input id="id_article" type="hidden" name="id_article" value="{{ article.id_article }}">
+            <form class="w-190" method="post" action="/admin/declinaison_telephone/add">
+                <input id="id_telephone" type="hidden" name="id_telephone" value="{{ telephone.id_telephone }}">
                 <label for="stock">stock :
                     <input name="stock" id="stock" type="number" class="form-control" required>
                 </label>
@@ -47,7 +47,7 @@
                 </label>
 
             </form>
-         <a href="/admin/article/edit?id_article={{ article.id_article }}"><button class="btn btn-secondary mt-2">annuler</button></a>
+         <a href="/admin/telephone/edit?id_telephone={{ telephone.id_telephone }}"><button class="btn btn-secondary mt-2">annuler</button></a>
         </div>
     </div>
 {% endblock %}

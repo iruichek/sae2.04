@@ -37,7 +37,7 @@ def auth_login_post():
             if user['role'] == 'ROLE_admin':
                 return redirect('/admin/commande/index')
             else:
-                return redirect('/client/article/show')
+                return redirect('/client/telephone/show')
     else:
         flash(u'Vérifier votre login et essayer encore.', 'alert-warning')
         return redirect('/login')
@@ -61,7 +61,7 @@ def auth_signup_post():
         flash(u'votre adresse Email ou  votre Login existe déjà', 'alert-warning')
         return redirect('/signup')
 
-    # ajouter un nouveau user
+
     password = generate_password_hash(password, method='scrypt') #ou sha256
     tuple_insert = (login, email, password, 'ROLE_client')
     sql = """  INSERT INTO utilisateur(login,email,password,role) VALUES (%s, %s,%s,%s); """
@@ -78,7 +78,7 @@ def auth_signup_post():
     session['login'] = login
     session['role'] = 'ROLE_client'
     session['id_user'] = id_user
-    return redirect('/client/article/show')
+    return redirect('/client/telephone/show')
 
 
 @auth_security.route('/logout')
