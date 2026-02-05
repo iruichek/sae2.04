@@ -6,9 +6,9 @@ def get_db():
     if db is None:
         db = g._database = pymysql.connect(
             host="localhost",
-            user="root",
+            user="dpernot",
             password="secret",
-            database="BDD_iruichek",
+            database="BDD_dpernot",
             charset='utf8mb4',
             cursorclass=pymysql.cursors.DictCursor
         )
