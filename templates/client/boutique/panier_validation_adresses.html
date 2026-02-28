@@ -1,169 +1,71 @@
 {% extends "client/layout_client.html" %}
 {% block body %}
-    <div class="container">
-        <div class="row align-self-right">
-            {% include('client/boutique/_panier.html') %}
-        </div>
-        <div class="row">
-             <br>
-            <a href="/client/coordonnee/show" class="btn btn-secondary mt-5 col-2"> ajouter une adresse (livrable 2)</a>
-            <form action="/client/commande/add"  style="display: inline-block;"  method="post" >
-            {% if adresses | length > 0 %}{% extends "client/layout_client.html" %}
-{% block body %}
-    <div class="container-fluid">
-            {% if telephone_commande %}
-            <h3>Recapitulatifs de la commande selectionnée</h3>
-            <table class="table">
-                <thead class="thead-dark">
-                    <tr><th>Nom</th><th>Quantite</th><th>Prix</th><th>Prix total</th></tr>
-                </thead>
-                <tbody>
-                        {% for ligne in telephone_commande %}
-                            <tr>
-                                <td>{{ ligne.nom }}
-                                {% if ligne.nb_declinaisons is defined and ligne.nb_declinaisons > 1 %}
-                                    <span style="color:rgba(255,197,197,0.6);"> ( {{ ligne.nb_declinaisons }} declinaisons )</span>
-                                    <span style="color:#6dcea2">
-                                    {% if ligne.couleur_id != 1 %}
-                                        {{ ligne.libelle_couleur }}
-                                    {% endif %}
-                                    </span>
-                                    <span  style="color:#d941c2">
-                                    {% if ligne.taille_id != 1 %}
-                                        {{ ligne.libelle_taille }}
-                                    {% endif %}
-                                    </span>
-                                {% endif %}
-                                </td>
-                                <td>{{ ligne.quantite }}</td>
-                                <td>{{ ligne.prix }} €</td>
-                                <td>{{ ligne.prix_ligne }} €  </td>
-                            </tr>
-                        {% endfor %}
-
-                </tbody>
-            </table>
-                <br>
-                <div style="color: brown">
-                <strong>adresse livraison : </strong>{{ commande_adresses.nom_livraison }} {{ commande_adresses.rue_livraison }} {{ commande_adresses.code_postal_livraison }} {{ commande_adresses.ville_livraison }}
-                <br>
-                <strong>adresse facturation : </strong>
-                {% if commande_adresses.adresse_identique == 'adresse_identique' %}
-                    adresse identique
-                {% else %}
-                    {{ commande_adresses.nom_facturation }} {{ commande_adresses.rue_facturation }} {{ commande_adresses.code_postal_facturation }} {{ commande_adresses.ville_facturation }}
-                {% endif %}
-                </div>
-            <hr>
-        {% endif %}
-        <div class="card shadow">
-            <div class="card-header py-3">
-                <p class="text-primary m-0 font-weight-bold">Toutes mes commandes</p>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
-                    <table class="table my-0" id="dataTable">
-                        <thead>
-                        <tr>
-                            <th>Date de commande</th>
-                            <th>Nombre d'telephone</th>
-                            <th>Coût total</th>
-                            <th>Etat de la commande</th>
-                            <th style="text-align: center;">Options</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for commande in commandes %}
-                            <tr id="" {% if commande.etat_id == 1 %} style="background: #FFD600; font-weight: bold;" {% endif %}>
-                                <td>{{ commande.date_achat.strftime('%d-%m-%Y') }}</td>
-                                <td> {{ commande.nbr_telephone }} </td>
-                                <td>
-                                    {{ "{:,.2f} €".format(commande.prix_total) }}
-                                </td>
-                                <td style="text-align: center;">
-                                    {% if commande.etat_id == 1 %} <div style="background-color: #ba8b00; padding: 5px;">
-                                     {{ commande.libelle }}
-                                    </div>
-                                    {% else %} <div style="background-color: #34ce57; padding: 5px;">
-                                        {{ commande.libelle }} </div>
-                                    {% endif %}
-                                </td>
-                                <td style="text-align: center;">
-                                    <a href="/client/commande/show?id_commande={{ commande.id_commande }}">
-                                        <button class="btn btn-primary" > Details </button>
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
+<div class="container mt-4">
+    <div class="bg-light p-3 mb-4">
+        <h1><i class="fas fa-check-circle"></i> Validation de la commande</h1>
     </div>
 
-{% endblock %}
+    {% if telephone_panier %}
+        <h3>Récapitulatif de votre commande</h3>
 
-                <br>
-                    <h4>Choisisser l'adresse de livraison</h4>
-                    <select  name="id_adresse_livraison" name="adresse_livraison" required  class="form-select">
-                        <option value="">Sélectionner l'adresse de facturation</option>
-                        {% for adresse  in adresses %}
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Téléphone</th>
+                    <th>Couleur</th>
+                    <th>Prix unitaire</th>
+                    <th>Quantité</th>
+                    <th>Sous-total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tel in telephone_panier %}
+                <tr>
+                    <td>{{ tel.nom }}</td>
+                    <td>{{ tel.libelle_couleur }}</td>
+                    <td>{{ "%.2f"|format(tel.prix) }} €</td>
+                    <td>{{ tel.quantite }}</td>
+                    <td>{{ "%.2f"|format(tel.prix_ligne) }} €</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-light">
+                    <td colspan="4" class="text-end"><h4>Total :</h4></td>
+                    <td><h4><strong>{{ "%.2f"|format(prix_total) }} €</strong></h4></td>
+                </tr>
+            </tfoot>
+        </table>
 
-                             <option value="{{ adresse.id_adresse }}"
-                             {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}
-                                 selected
-                             {% endif %}
-
-                             >{{ adresse.nom }} ({{ adresse.code_postal }})
-                                 {{ adresse.ville }} - {{ adresse.rue }}
-                             {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}
-                                 (f)
-                             {% endif %}
-
-                             </option>
-                        {% endfor %}
-                    </select>
-                    <br>
-
-                    <h4>Choisisser l'adresse de facturation</h4>
-                    adresse de facturation identique <input type="checkbox" name="adresse_identique" value="adresse_identique" id="adresse_identique" onclick="identique()">
-                <br>
-                    <select  id="id_adresse_facturation" name="id_adresse_facturation" required class="form-select">
-                        <option value="">Sélectionner l'adresse de livraison</option>
-                        {% for adresse  in adresses %}
-                             <option value="{{ adresse.id_adresse }}"
-                             {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}
-                                 selected
-                             {% endif %}
-                             >{{ adresse.nom }} ({{ adresse.code_postal }})
-                                 {{ adresse.ville }} - {{ adresse.rue }}
-                             </option>
-                        {% endfor %}
-                    </select>
-                {%  else %}
-                    Il faut une adresse de livraison et de facturation pour valider la commande (livrable 2)
-                    <a href="/client/coordonnee/show"  class="btn btn-primary">Ajouter une adresse (livrable 2)</a>
-                {% endif %}
-                <br>
-                <button class="btn btn-primary mt-4" > Passer ma commande </button>
-            </form>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <a href="/client/telephone/show" class="btn btn-secondary btn-lg w-100">
+                    <i class="fas fa-arrow-left"></i> Continuer mes achats
+                </a>
+            </div>
+            <div class="col-md-4">
+                <form action="/client/panier/vider" method="post">
+                    <button type="submit" class="btn btn-warning btn-lg w-100"
+                            onclick="return confirm('Voulez-vous vraiment vider votre panier ?')">
+                        <i class="fas fa-trash-alt"></i> Vider le panier
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <form action="/client/commande/add" method="post">
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i class="fas fa-check-circle"></i> Valider la commande
+                    </button>
+                </form>
+            </div>
         </div>
-    </div>
-
-    <script>
-    function identique(){
-	if(document.getElementById('adresse_identique').checked == true)
-        {
-        document.getElementById("id_adresse_facturation").style.display = 'none';
-        document.getElementById("id_adresse_facturation").required = false;
-        }
-        else
-        {
-        document.getElementById("id_adresse_facturation").style.display = 'block';
-        document.getElementById("id_adresse_facturation").required = true;
-        }
-    };
-    </script>
+    {% else %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> Votre panier est vide.
+        </div>
+        <a href="/client/telephone/show" class="btn btn-primary">
+            <i class="fas fa-mobile-alt"></i> Voir les téléphones
+        </a>
+    {% endif %}
+</div>
 {% endblock %}

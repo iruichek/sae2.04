@@ -156,18 +156,17 @@ def edit_telephone():
     id_telephone = request.args.get('id_telephone')
     mycursor = get_db().cursor()
 
-
     sql = '''
         SELECT 
             t.id_telephone,
-            t.nom_telephone,
-            t.prix_telephone,
+            t.nom_telephone  AS nom,
+            t.prix_telephone AS prix,
             t.stock,
             t.marque,
             t.fournisseur,
             t.poids,
-            t.taille,
-            t.photo AS image,
+            t.taille         AS description,
+            t.photo          AS image,
             t.type_telephone_id,
             t.couleur_id
         FROM telephone t
@@ -177,77 +176,65 @@ def edit_telephone():
     telephone = mycursor.fetchone()
 
 
-    sql = 'SELECT id_type_telephone, libelle_type_telephone FROM type_telephone'
+    sql = '''
+        SELECT id_type_telephone, libelle_type_telephone AS libelle
+        FROM type_telephone
+    '''
     mycursor.execute(sql)
     types_telephone = mycursor.fetchall()
-
 
     sql = 'SELECT id_couleur, libelle_couleur FROM couleur'
     mycursor.execute(sql)
     couleurs = mycursor.fetchall()
 
+    declinaisons_telephone = []
+
     return render_template('admin/telephone/edit_telephone.html',
                            telephone=telephone,
                            types_telephone=types_telephone,
-                           couleurs=couleurs)
+                           couleurs=couleurs,
+                           declinaisons_telephone=declinaisons_telephone)
 
 
 @admin_telephone.route('/admin/telephone/edit', methods=['POST'])
 def valid_edit_telephone():
     mycursor = get_db().cursor()
 
-    nom = request.form.get('nom')
-    id_telephone = request.form.get('id_telephone')
-    image = request.files.get('image', '')
-    type_telephone_id = request.form.get('type_telephone_id', '')
-    couleur_id = request.form.get('couleur_id', 1)
-    prix = request.form.get('prix', '')
-    stock = request.form.get('stock', 0)
-    marque = request.form.get('marque', '')
-    fournisseur = request.form.get('fournisseur', '')
-    poids = request.form.get('poids', '')
-    taille = request.form.get('taille', '')
-
+    nom             = request.form.get('nom')
+    id_telephone    = request.form.get('id_telephone')
+    image           = request.files.get('image')
+    type_telephone_id = request.form.get('type_telephone_id')
+    prix            = request.form.get('prix')
+    stock           = request.form.get('stock', 0)
+    taille          = request.form.get('description', '')
 
     sql = 'SELECT photo AS image FROM telephone WHERE id_telephone = %s'
     mycursor.execute(sql, (id_telephone,))
     result = mycursor.fetchone()
     image_nom = result['image'] if result else None
 
-
-    if image:
-
+    if image and image.filename != '':
         if image_nom and os.path.exists(os.path.join('static/images/', image_nom)):
             os.remove(os.path.join('static/images/', image_nom))
-
-
         filename = 'img_upload_' + str(int(2147483647 * random())) + '.png'
         image.save(os.path.join('static/images/', filename))
         image_nom = filename
 
-
     sql = '''
         UPDATE telephone 
-        SET nom_telephone = %s, 
-            photo = %s, 
-            prix_telephone = %s, 
+        SET nom_telephone     = %s, 
+            photo             = %s, 
+            prix_telephone    = %s, 
             type_telephone_id = %s, 
-            couleur_id = %s,
-            stock = %s,
-            marque = %s,
-            fournisseur = %s,
-            poids = %s,
-            taille = %s
+            stock             = %s,
+            taille            = %s
         WHERE id_telephone = %s
     '''
 
     try:
-        mycursor.execute(sql, (nom, image_nom, prix, type_telephone_id, couleur_id,
-                               stock, marque, fournisseur, poids, taille, id_telephone))
+        mycursor.execute(sql, (nom, image_nom, prix, type_telephone_id, stock, taille, id_telephone))
         get_db().commit()
-
-        message = f'Téléphone modifié : {nom} - Type: {type_telephone_id} - Prix: {prix}€'
-        flash(message, 'alert-success')
+        flash(f'Téléphone "{nom}" modifié avec succès', 'alert-success')
     except Exception as e:
         print(f"Erreur modification téléphone: {e}")
         flash("Erreur lors de la modification", 'alert-danger')

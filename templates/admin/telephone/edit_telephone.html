@@ -35,6 +35,9 @@ types_telephone : tableau de dictionnaires
                         <input name="image"  onchange="loadFile(event)" type="file" class="form-control" value="{{ telephone.image }}">             {# à modifier #}
                     </label>                                         {# à modifier #}
 {#                https://blog.miguelgrinberg.com/post/handling-file-uploads-with-flask#}
+                    <label for="stock" > stock  :
+                        <input name="stock" type="number" min="0" step="1" value="{{ telephone.stock }}" class="form-control" >
+                    </label>
 
                 <label for="type_telephone_id">Type de l'telephone :
                     <select name="type_telephone_id" class="form-select">
