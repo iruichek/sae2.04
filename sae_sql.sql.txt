@@ -1,0 +1,135 @@
+USE BDD_iruichek;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS ligne_panier;
+DROP TABLE IF EXISTS ligne_commande;
+DROP TABLE IF EXISTS commande;
+DROP TABLE IF EXISTS telephone;
+DROP TABLE IF EXISTS couleur;
+DROP TABLE IF EXISTS type_telephone;
+DROP TABLE IF EXISTS etat;
+DROP TABLE IF EXISTS utilisateur;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+
+CREATE TABLE utilisateur (
+    id_utilisateur INT AUTO_INCREMENT PRIMARY KEY,
+    login VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    nom VARCHAR(100),
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    est_actif BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE etat (
+    id_etat INT AUTO_INCREMENT PRIMARY KEY,
+    libelle VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE type_telephone (
+    id_type_telephone INT AUTO_INCREMENT PRIMARY KEY,
+    libelle_type_telephone VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE couleur (
+    id_couleur INT AUTO_INCREMENT PRIMARY KEY,
+    libelle_couleur VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE telephone (
+    id_telephone INT AUTO_INCREMENT PRIMARY KEY,
+    nom_telephone VARCHAR(100) NOT NULL,
+    poids DECIMAL(5,2),
+    taille VARCHAR(50),
+    prix_telephone DECIMAL(8,2),
+    couleur_id INT NOT NULL,
+    type_telephone_id INT NOT NULL,
+    fournisseur VARCHAR(100),
+    marque VARCHAR(100),
+    photo VARCHAR(255),
+    stock INT DEFAULT 0,
+    FOREIGN KEY (couleur_id) REFERENCES couleur(id_couleur),
+    FOREIGN KEY (type_telephone_id) REFERENCES type_telephone(id_type_telephone)
+);
+
+CREATE TABLE commande (
+    id_commande INT AUTO_INCREMENT PRIMARY KEY,
+    date_achat DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    utilisateur_id INT NOT NULL,
+    etat_id INT NOT NULL,
+    FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
+    FOREIGN KEY (etat_id) REFERENCES etat(id_etat)
+);
+
+CREATE TABLE ligne_commande (
+    commande_id INT NOT NULL,
+    telephone_id INT NOT NULL,
+    prix DECIMAL(8,2) NOT NULL,
+    quantite INT NOT NULL,
+    PRIMARY KEY (commande_id, telephone_id),
+    FOREIGN KEY (commande_id) REFERENCES commande(id_commande),
+    FOREIGN KEY (telephone_id) REFERENCES telephone(id_telephone)
+);
+
+CREATE TABLE ligne_panier (
+    utilisateur_id INT NOT NULL,
+    telephone_id INT NOT NULL,
+    quantite INT NOT NULL,
+    date_ajout DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (utilisateur_id, telephone_id),
+    FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
+    FOREIGN KEY (telephone_id) REFERENCES telephone(id_telephone)
+);
+
+
+INSERT INTO utilisateur(id_utilisateur,login,email,password,role,nom,est_actif) VALUES
+(1,'admin','admin@admin.fr',
+    'scrypt:32768:8:1$irSP6dJEjy1yXof2$56295be51bb989f467598b63ba6022405139656d6609df8a71768d42738995a21605c9acbac42058790d30fd3adaaec56df272d24bed8385e66229c81e71a4f4',
+    'ROLE_admin','admin','1'),
+(2,'client','client@client.fr',
+    'scrypt:32768:8:1$iFP1d8bdBmhW6Sgc$7950bf6d2336d6c9387fb610ddaec958469d42003fdff6f8cf5a39cf37301195d2e5cad195e6f588b3644d2a9116fa1636eb400b0cb5537603035d9016c15910',
+    'ROLE_client','client','1'),
+(3,'client2','client2@client2.fr',
+    'scrypt:32768:8:1$l3UTNxiLZGuBKGkg$ae3af0d19f0d16d4a495aa633a1cd31ac5ae18f98a06ace037c0f4fb228ed86a2b6abc64262316d0dac936eb72a67ae82cd4d4e4847ee0fb0b19686ee31194b3',
+    'ROLE_client','client2','1');
+
+INSERT INTO etat (libelle) VALUES
+('en attente'),
+('validé'),
+('expédié');
+
+INSERT INTO type_telephone (libelle_type_telephone) VALUES
+('Smartphone'),
+('Téléphone pliable'),
+('Téléphone classique');
+
+
+INSERT INTO couleur (id_couleur, libelle_couleur) VALUES
+(1, 'Gris'),
+(2, 'Rose'),
+(3, 'Lavande'),
+(4, 'Noir'),
+(5, 'Rouge'),
+(6, 'Blanc');
+
+INSERT INTO telephone (nom_telephone, poids, taille, prix_telephone, couleur_id, type_telephone_id, fournisseur, marque, photo, stock) VALUES
+('Galaxy S21', 169.0, '151.7 x 71.2 x 7.9 mm', 799.99, 3, 1, 'Samsung', 'Samsung', 'galaxyS21gris.png', 10),
+('Galaxy S21', 169.0, '151.7 x 71.2 x 7.9 mm', 799.99, 1, 1, 'Samsung', 'Samsung', 'galaxyS21lavande.png', 7),
+('iPhone 13', 174.0, '146.7 x 71.5 x 7.7 mm', 899.99, 1, 1, 'Apple', 'Apple', 'iphone13rouge.png', 15),
+('iPhone 13', 174.0, '146.7 x 71.5 x 7.7 mm', 899.99, 2, 1, 'Apple', 'Apple', 'iphone13rose.png', 8),
+('Nokia 3310', 133.0, '115.6 x 51.0 x 12.8 mm', 59.99, 1, 2, 'Nokia', 'Nokia', 'nokia3310gris.png', 20),
+('Redmi Note 10 Pro', 178.8, '160.5 x 74.5 x 8.3 mm', 199.99, 3, 1, 'Xiaomi', 'Xiaomi', 'redmipro.png', 25),
+('Motorola Razr', 205.0, '172.0 x 72.6 x 6.9 mm', 1399.99, 5, 2, 'Motorola', 'Motorola', 'motorolarouge.png', 5),
+('Pixel 6', 207.0, '158.6 x 74.8 x 8.9 mm', 599.99, 6, 1, 'Google', 'Google', 'pixel6gris.png', 12),
+('Sony Xperia 10', 162.0, '154.0 x 68.0 x 8.4 mm', 349.99, 3, 1, 'Sony', 'Sony', 'sonyrose.png', 8),
+('OnePlus Nord', 184.0, '158.3 x 73.3 x 8.2 mm', 399.99, 4, 1, 'OnePlus', 'OnePlus', 'oneplusbleu.png', 18),
+('Asus ROG Phone 5', 238.0, '173.0 x 77.0 x 9.6 mm', 999.99, 1, 3, 'Asus', 'Asus', 'asus.png', 7),
+('Huawei P40', 175.0, '148.9 x 71.1 x 8.5 mm', 799.99, 2, 1, 'Huawei', 'Huawei', 'huawei.png', 10),
+('LG Velvet', 180.0, '167.1 x 74.1 x 7.9 mm', 599.99, 6, 1, 'LG', 'LG', 'lgvelvetblanc.png', 13),
+('Realme GT', 186.0, '158.5 x 73.3 x 8.4 mm', 449.99, 5, 1, 'Realme', 'Realme', 'realme.png', 20),
+('Oppo Find X3', 193.0, '160.0 x 74.0 x 8.3 mm', 699.99, 4, 1, 'Oppo', 'Oppo', 'opponoir.png', 11);
+

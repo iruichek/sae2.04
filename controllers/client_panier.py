@@ -28,7 +28,6 @@ def client_panier_add():
         flash('Stock insuffisant', 'alert-warning')
         return redirect('/client/telephone/show')
 
-    # ✅ CORRECTION : user_id → utilisateur_id
     sql_check = '''
         SELECT id_ligne_panier, quantite 
         FROM ligne_panier 
@@ -51,7 +50,6 @@ def client_panier_add():
         '''
         mycursor.execute(sql_update, (nouvelle_quantite, ligne_existante['id_ligne_panier']))
     else:
-        # ✅ CORRECTION : user_id → utilisateur_id
         sql_insert = '''
             INSERT INTO ligne_panier (utilisateur_id, telephone_id, quantite) 
             VALUES (%s, %s, %s)
@@ -80,7 +78,6 @@ def client_panier_delete():
         flash('Erreur', 'alert-danger')
         return redirect('/client/telephone/show')
 
-    # ✅ CORRECTION : user_id → utilisateur_id
     sql = '''
         SELECT id_ligne_panier, quantite, telephone_id
         FROM ligne_panier 
@@ -122,7 +119,6 @@ def client_panier_vider():
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
-    # ✅ CORRECTION : user_id → utilisateur_id
     sql = '''
         SELECT id_ligne_panier, telephone_id, quantite 
         FROM ligne_panier 
@@ -160,7 +156,6 @@ def client_panier_delete_line():
         flash('Erreur', 'alert-danger')
         return redirect('/client/telephone/show')
 
-    # ✅ CORRECTION : user_id → utilisateur_id
     sql = '''
         SELECT telephone_id, quantite 
         FROM ligne_panier 
@@ -194,8 +189,6 @@ def client_panier_show():
     mycursor = get_db().cursor()
     id_client = session.get('id_user')
 
-    # ✅ CORRECTION : user_id → utilisateur_id
-    # ✅ Calcul du prix_ligne en SQL
     sql = '''
         SELECT 
             lp.id_ligne_panier,
@@ -213,7 +206,6 @@ def client_panier_show():
         WHERE lp.utilisateur_id = %s
     '''
 
-    # ✅ Calcul du prix total EN SQL (pas en Python)
     sql_prix_total = '''
         SELECT COALESCE(SUM(lp.quantite * t.prix_telephone), 0) AS prix_total
         FROM ligne_panier lp
@@ -278,6 +270,5 @@ def client_panier_filtre_suppr():
     session.pop('filter_prix_max', None)
     session.pop('filter_types', None)
 
-    print("Filtres supprimés")
     flash('Filtres supprimés', 'alert-info')
     return redirect('/client/telephone/show')

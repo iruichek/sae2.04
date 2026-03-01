@@ -11,11 +11,9 @@ client_commande = Blueprint('client_commande', __name__,
 
 @client_commande.route('/client/commande/valide', methods=['GET', 'POST'])
 def client_commande_valide():
-    """Page de validation avant de passer commande"""
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
-    # ✅ AJOUT : Récupérer le panier avec calcul en SQL
     sql = '''
         SELECT 
             lp.id_ligne_panier,
@@ -34,7 +32,6 @@ def client_commande_valide():
     mycursor.execute(sql, (id_client,))
     telephone_panier = mycursor.fetchall()
 
-    # ✅ AJOUT : Calculer le prix total en SQL
     if telephone_panier and len(telephone_panier) >= 1:
         sql_prix_total = '''
             SELECT SUM(lp.quantite * t.prix_telephone) AS prix_total
@@ -58,11 +55,9 @@ def client_commande_valide():
 
 @client_commande.route('/client/commande/add', methods=['POST'])
 def client_commande_add():
-    """✅ Validation finale : créer la commande"""
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
-    # ✅ AJOUT : Sélection du contenu du panier
     sql = '''
         SELECT 
             lp.id_ligne_panier,
@@ -80,7 +75,6 @@ def client_commande_add():
         flash('Pas de téléphones dans le panier', 'alert-warning')
         return redirect('/client/telephone/show')
 
-    # ✅ AJOUT : Création de la commande
     date_achat = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     sql_commande = '''
         INSERT INTO commande (utilisateur_id, date_achat, etat_id) 
@@ -88,21 +82,17 @@ def client_commande_add():
     '''
     mycursor.execute(sql_commande, (id_client, date_achat))
 
-    # ✅ AJOUT : Récupération de l'ID de la dernière commande
     sql_last_id = 'SELECT LAST_INSERT_ID() as last_insert_id'
     mycursor.execute(sql_last_id)
     id_commande = mycursor.fetchone()['last_insert_id']
 
-    # ✅ AJOUT : Ajout des lignes de commande + suppression du panier
     for item in items_ligne_panier:
-        # Suppression de la ligne de panier
         sql_delete_panier = '''
             DELETE FROM ligne_panier 
             WHERE id_ligne_panier = %s
         '''
         mycursor.execute(sql_delete_panier, (item['id_ligne_panier'],))
 
-        # ✅ Ajout d'une ligne de commande
         sql_insert_commande = '''
             INSERT INTO ligne_commande (commande_id, telephone_id, quantite, prix) 
             VALUES (%s, %s, %s, %s)
@@ -117,11 +107,9 @@ def client_commande_add():
 
 @client_commande.route('/client/commande/show', methods=['GET', 'POST'])
 def client_commande_show():
-    """✅ Affichage de la liste des commandes + détail si sélectionné"""
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
-    # ✅ AJOUT : Sélection des commandes du client avec calculs en SQL
     sql = '''
         SELECT 
             c.id_commande,
@@ -143,13 +131,9 @@ def client_commande_show():
     telephone_commande = None
     commande_adresses = None
 
-    # ✅ AJOUT : Si on clique sur une commande, afficher le détail
     id_commande = request.args.get('id_commande', None)
 
     if id_commande:
-        print(f"ID Commande reçu: {id_commande}")
-
-        # ✅ AJOUT : Sélection du détail d'une commande avec calcul en SQL
         sql_detail = '''
             SELECT 
                 lc.quantite,
